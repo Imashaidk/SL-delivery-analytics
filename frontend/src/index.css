@@ -210,8 +210,8 @@ body {
 }
 
 .form-control option {
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  background-color: #ffffff;
+  color: #000000;
 }
 
 .btn-primary {
