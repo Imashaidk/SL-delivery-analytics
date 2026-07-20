@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+    <rect width="800" height="400" fill="#f8fafc" />
+    <text x="300" y="30" font-size="20" font-family="Arial" font-weight="bold">TO-BE Process Map (AI Driven)</text>
+    <rect x="50" y="80" width="150" height="60" fill="#bae6fd" stroke="#0ea5e9"/>
+    <text x="70" y="115" font-family="Arial" font-size="14">Customer Orders</text>
+    <line x1="200" y1="110" x2="250" y2="110" stroke="black" stroke-width="2"/>
+    <rect x="250" y="60" width="150" height="100" fill="#c7d2fe" stroke="#6366f1"/>
+    <text x="270" y="90" font-family="Arial" font-size="14">AI Prediction:</text>
+    <text x="270" y="110" font-family="Arial" font-size="12">- Weather Impact</text>
+    <text x="270" y="130" font-family="Arial" font-size="12">- Traffic Risk</text>
+    <line x1="400" y1="110" x2="450" y2="110" stroke="black" stroke-width="2"/>
+    <rect x="450" y="80" width="150" height="60" fill="#bbf7d0" stroke="#22c55e"/>
+    <text x="460" y="105" font-family="Arial" font-size="14">Pre-allocated Rider</text>
+    <text x="460" y="125" font-family="Arial" font-size="12">(Zero lag time)</text>
+    <line x1="600" y1="110" x2="650" y2="110" stroke="black" stroke-width="2"/>
+    <rect x="650" y="80" width="120" height="60" fill="#bbf7d0" stroke="#22c55e"/>
+    <text x="670" y="115" font-family="Arial" font-size="14">On-Time ETA</text>
+</svg>
