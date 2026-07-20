@@ -209,6 +209,11 @@ body {
   background: rgba(249, 115, 22, 0.05);
 }
 
+.form-control option {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+}
+
 .btn-primary {
   width: 100%;
   background: linear-gradient(135deg, var(--primary), #fb923c);
