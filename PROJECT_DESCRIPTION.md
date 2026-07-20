@@ -5,11 +5,21 @@ This document explains the inner workings of the **SL Delivery Analytics Pro** p
 ---
 
 ## 1. The Business Problem
-Food and grocery delivery platforms in Sri Lanka face two major operational challenges:
-1. **Delivery Delays:** Unpredictable weather (monsoons), traffic gridlocks in Colombo, and long distances severely impact Estimated Time of Arrival (ETA).
-2. **Customer Churn:** Customers who repeatedly experience severe delays (e.g., waiting >30 minutes past their ETA) become frustrated and uninstall the app (churn).
+The food and grocery delivery market in Sri Lanka is highly competitive, dominated by major players like PickMe Food, UberEats, and regional supermarket delivery platforms (like Keells Online). In this fast-paced environment, customer loyalty is heavily tied to reliability.
 
-**The Goal:** Build an AI system that can predict delays *before* the rider is dispatched, and identify which customers are at the highest risk of churning so the marketing team can intervene.
+QuickCart LK (our fictional platform) is facing two massive, interconnected operational challenges that directly threaten its profitability:
+
+1. **Severe Delivery Delays:** 
+   - **The Cause:** Unpredictable monsoon weather patterns, severe traffic gridlocks in core districts like Colombo 1-15, and operational bottlenecks (e.g., assigning a rider *after* a restaurant finishes prep instead of pre-allocating them).
+   - **The Impact:** Riders get stuck, food gets cold, and the originally promised Estimated Time of Arrival (ETA) becomes wildly inaccurate, frustrating customers.
+
+2. **Exponential Customer Churn:** 
+   - **The Cause:** Customers who experience repeated "severe delays" (waiting >30 minutes past their promised ETA).
+   - **The Impact:** Our data reveals that once a customer experiences multiple severe delays in a given month, their probability of permanently deleting the app (churning) skyrockets to over 50%. This results in a massive loss of Lifetime Value (LTV) and wasted Customer Acquisition Cost (CAC).
+
+**The Goal:** Build an end-to-end AI system that bridges the gap between Operations and Marketing. The system must:
+1. Predict the exact delay time of an order *before* the rider is even dispatched, allowing operations to dynamically route riders.
+2. Identify which specific customers are at the absolute highest risk of churning, allowing the marketing team to trigger automated retention protocols (like wallet credits or apologies) *before* the user uninstalls the app.
 
 ---
 
