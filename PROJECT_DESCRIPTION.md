@@ -7,7 +7,7 @@ This document explains the inner workings of the **SL Delivery Analytics Pro** p
 ## 1. The Business Problem
 The food and grocery delivery market in Sri Lanka is highly competitive, dominated by major players like PickMe Food, UberEats, and regional supermarket delivery platforms (like Keells Online). In this fast-paced environment, customer loyalty is heavily tied to reliability.
 
-QuickCart LK (our fictional platform) is facing two massive, interconnected operational challenges that directly threaten its profitability:
+SL Delivery Analytics Pro (our fictional platform) is facing two massive, interconnected operational challenges that directly threaten its profitability:
 
 1. **Severe Delivery Delays:** 
    - **The Cause:** Unpredictable monsoon weather patterns, severe traffic gridlocks in core districts like Colombo 1-15, and operational bottlenecks (e.g., assigning a rider *after* a restaurant finishes prep instead of pre-allocating them).

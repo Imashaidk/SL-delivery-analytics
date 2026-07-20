@@ -9,7 +9,7 @@ def create_brd():
     doc.add_heading('Business Requirements Document (BRD)', 0)
     
     doc.add_heading('1. Context & Problem Statement', level=1)
-    doc.add_paragraph("QuickCart LK operates in Colombo (districts 1–15), Gampaha, and Kandy. In Sri Lanka's competitive delivery market, delays from Colombo traffic, monsoon weather, and operational bottlenecks are driving severe customer churn. The business must identify the root causes of these delays and implement an AI-driven predictive system to manage them.")
+    doc.add_paragraph("SL Delivery Analytics Pro operates in Colombo (districts 1–15), Gampaha, and Kandy. In Sri Lanka's competitive delivery market, delays from Colombo traffic, monsoon weather, and operational bottlenecks are driving severe customer churn. The business must identify the root causes of these delays and implement an AI-driven predictive system to manage them.")
     
     doc.add_heading('2. Objectives & Success Metrics', level=1)
     doc.add_paragraph("• Reduce overall delivery delay rate from 15% to <8%.\n• Cut churn among customers experiencing delayed orders by 30%.\n• Implement proactive routing and retention alerts based on real-time AI predictions.")
@@ -73,7 +73,7 @@ def create_svgs():
 def create_notebook():
     nb = nbf.v4.new_notebook()
     nb.cells = [
-        nbf.v4.new_markdown_cell("# Exploratory Data Analysis (EDA)\nAnalyzing Delays and Churn for QuickCart LK."),
+        nbf.v4.new_markdown_cell("# Exploratory Data Analysis (EDA)\nAnalyzing Delays and Churn for SL Delivery Analytics Pro."),
         nbf.v4.new_code_cell("import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\norders = pd.read_csv('data/orders.csv')\ncustomers = pd.read_csv('data/customers.csv')\norders['DelayMins'] = orders['ActualDeliveryMins'] - orders['ExpectedDeliveryMins']"),
         nbf.v4.new_markdown_cell("## 1. Delay by Region"),
         nbf.v4.new_code_cell("plt.figure(figsize=(10,6))\nsns.barplot(data=orders, x='Region', y='DelayMins')\nplt.title('Average Delay by Region')\nplt.show()"),
@@ -87,7 +87,7 @@ def create_notebook():
     print("Created 05_EDA_Notebook.ipynb")
 
 def create_sql():
-    sql = """-- SQL Analysis Queries for QuickCart LK
+    sql = """-- SQL Analysis Queries for SL Delivery Analytics Pro
 -- 1. Overall Average Delay
 SELECT AVG(ActualDeliveryMins - ExpectedDeliveryMins) as avg_delay_mins FROM orders;
 
@@ -155,7 +155,7 @@ def create_case_study():
     doc.add_heading('Case Study: Reducing Delivery Delays & Churn', 0)
     
     doc.add_heading('Problem Statement', level=1)
-    doc.add_paragraph("QuickCart LK is experiencing high customer churn due to unpredictable delivery delays caused by monsoon weather and Colombo traffic gridlocks. The inability to accurately predict ETA creates friction and destroys customer trust.")
+    doc.add_paragraph("SL Delivery Analytics Pro is experiencing high customer churn due to unpredictable delivery delays caused by monsoon weather and Colombo traffic gridlocks. The inability to accurately predict ETA creates friction and destroys customer trust.")
     
     doc.add_heading('Approach', level=1)
     doc.add_paragraph("Conducted end-to-end data engineering and business analysis. Trained a RandomForestRegressor on 15,000 synthetic records to predict delay minutes based on region, weather, traffic, and distance. Trained a RandomForestClassifier to quantify the exact probability of a user churning based on their history of severe delays.")

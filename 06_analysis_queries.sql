@@ -1,4 +1,4 @@
--- SQL Analysis Queries for QuickCart LK
+-- SQL Analysis Queries for SL Delivery Analytics Pro
 -- 1. Overall Average Delay
 SELECT AVG(ActualDeliveryMins - ExpectedDeliveryMins) as avg_delay_mins FROM orders;
 
