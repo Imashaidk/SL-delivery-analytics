@@ -86,4 +86,19 @@ If you want to test the actual functioning code, you need to run both the FastAP
 1. Open a **second** terminal window.
 2. Navigate to the frontend folder: `cd frontend`.
 3. Start the Vite server: `npm run dev`.
-4. *Test it:* Open `http://localhost:5173` in your browser. Go to the "Routing AI" tab, change the weather condition to "Heavy Rain (Monsoon)", and click "Initialize Simulation" to watch the backend AI calculate a delayed ETA in real-time.
+4. *Test it:* Open `http://localhost:5173` in your browser.
+
+### C. How to Use the Dashboard
+Once the React frontend is running in your browser, you can interact with the three main tabs at the top of the screen:
+
+1. **Global Insights (EDA Tab):** 
+   - *What to do:* Scroll through the charts to view the exploratory data analysis. 
+   - *What to notice:* Look at the pie chart to see how order volume is distributed across Sri Lanka. Look at the bar chart to see how average delays fluctuate by region. Look at the Area Chart at the bottom to see how customer churn probability spikes exponentially after 3 severe delays.
+
+2. **Routing AI (Delay Simulator):** 
+   - *What to do:* Use the dropdowns to simulate a real-time order. For example, select "Colombo 1-15", change Weather to "Heavy Rain (Monsoon)", set Traffic to "Gridlock", and increase the distance slider to 15 KM. Click **Initialize Simulation**.
+   - *What happens:* The React app sends these parameters to the Python FastAPI server. The AI model processes the data and sends back an exact predicted delay time. A glowing Risk Meter will fill up (Green/Yellow/Red) based on the severity of the delay.
+
+3. **Retention AI (Churn Predictor):** 
+   - *What to do:* Enter a customer's history. For example, enter 20 for Total Orders and 4 for Severe Delays. Click **Analyze Flight Risk**.
+   - *What happens:* The AI model evaluates the customer's history and calculates the exact percentage probability that they are going to uninstall the app, triggering a red critical alert if the probability is high.
