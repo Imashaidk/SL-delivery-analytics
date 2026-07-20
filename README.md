@@ -1,73 +1,81 @@
-# 🛵 Sri Lankan Delivery Platform Analytics
+# 🛵 SL Delivery Analytics Pro
 
-## 📌 Project Overview
-In Sri Lanka's highly competitive food and grocery delivery market, retaining customers is critical for profitability. This project analyzes a simulated dataset of 15,000 orders and 2,000 customers across major Sri Lankan cities (Colombo, Kandy, Galle, Gampaha) to understand the root causes of delivery delays and their impact on customer churn.
+![UI Dashboard](https://img.shields.io/badge/UI-React%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react)
+![Backend API](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi)
+![Machine Learning](https://img.shields.io/badge/ML-Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn)
 
-### **Business Problem**
-Delivery delays caused by monsoon weather and severe traffic lead to customer frustration. We need to:
-1. Identify the primary drivers of delivery delays.
-2. Predict the exact delay of an order in real-time.
-3. Predict which customers are at high risk of churning (abandoning the app) due to poor delivery experiences.
+A full-stack, AI-powered command center designed to optimize logistics and predict customer churn for a food/grocery delivery platform operating in Sri Lanka. 
 
----
-
-## 🛠️ Tech Stack
-- **Data Engineering & Analysis:** Python, Pandas, NumPy
-- **Machine Learning:** Scikit-Learn (Random Forest Regression & Classification)
-- **Data Visualization & Dashboard:** Streamlit, Matplotlib, Seaborn
+## 🌟 Project Overview
+This project demonstrates an end-to-end Data Science and Full-Stack Engineering workflow:
+1. **Data Engineering:** Generation and preprocessing of localized synthetic delivery data (handling real-world variables like Monsoon weather, Colombo traffic, and regional distances).
+2. **Machine Learning:** Training Random Forest models to predict exact delivery delays and classify customer churn risk.
+3. **Backend API:** A lightning-fast RESTful API built with Python (FastAPI) to serve the trained models in real-time.
+4. **Frontend Dashboard:** A premium, interactive UI built with React, Vite, and Recharts, utilizing modern glassmorphism design principles.
 
 ---
 
-## 📊 Methodology & Models
+## 🏗️ Architecture & Tech Stack
 
-### 1. Delivery Delay Prediction (Logistics)
-- **Algorithm:** Random Forest Regressor
-- **Features:** Delivery Region, Distance (KM), Weather (Clear, Monsoon), Time of Day, Traffic Condition.
-- **Performance:** Achieved an RMSE of ~9.8 minutes, allowing the operations team to proactively manage customer expectations.
+### 🧠 Data & Machine Learning (Python)
+- **Pandas & NumPy:** For data manipulation, cleaning, and exploratory data analysis.
+- **Scikit-Learn:** 
+  - `RandomForestRegressor` for predicting continuous delivery delay minutes.
+  - `RandomForestClassifier` for predicting the binary probability of customer churn.
+- **Joblib:** Model serialization and loading.
 
-### 2. Customer Churn Prediction (Marketing)
-- **Algorithm:** Random Forest Classifier
-- **Features:** Total Lifetime Orders, Average Experienced Delay, Number of Severe Delays (>30 mins).
-- **Performance:** Achieved an accuracy of 75%. This model allows the marketing team to target at-risk customers with retention campaigns (e.g., promotional codes).
+### ⚙️ Backend API (Python)
+- **FastAPI:** High-performance web framework for serving the ML endpoints.
+- **Uvicorn:** ASGI server for production-grade routing.
+
+### 🎨 Frontend UI (JavaScript)
+- **React & Vite:** For a blazing-fast, component-based user interface.
+- **Recharts:** For interactive, animated data visualizations (Area, Bar, and Pie charts).
+- **Lucide-React:** For modern, scalable iconography.
+- **Vanilla CSS:** Custom glassmorphism, glowing risk meters, and CSS animations.
 
 ---
 
-## 🚀 How to Run the Dashboard Locally
+## 🚀 How to Run Locally
 
-This project includes an interactive Streamlit dashboard for stakeholders to view delay hotspots, simulate order delays, and assess churn risk.
-
-### Prerequisites
-Make sure you have Python 3.8+ installed. 
-
-### Installation
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/sl-delivery-analytics.git
-   cd sl-delivery-analytics
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   # On Windows:
-   .\venv\Scripts\activate
-   # On Mac/Linux:
-   source venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### Running the App
+### 1. Clone the Repository
 ```bash
-streamlit run dashboard.py
+git clone https://github.com/Imashaidk/SL-delivery-analytics.git
+cd SL-delivery-analytics
 ```
 
+### 2. Start the FastAPI Backend
+Open a terminal and run the following commands:
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/Scripts/activate  # On Windows
+
+# Install dependencies
+pip install -r requirements.txt
+pip install fastapi uvicorn
+
+# Start the API server
+python backend/main.py
+```
+*The backend will run on `http://localhost:8000`*
+
+### 3. Start the React Frontend
+Open a **new** terminal window and run:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*The frontend dashboard will be available at `http://localhost:5173`*
+
 ---
 
-## 💡 Key Business Recommendations
-1. **Dynamic Weather Surcharges:** The EDA revealed that Monsoon conditions cause the most severe delays. Implementing a slight "weather surge" fee to incentivize more riders during rain could reduce delays.
-2. **Proactive Apologies:** Customers who experience more than 2 severe delays (>30 mins) have a significantly higher probability of churning. An automated system should trigger a high-value apology voucher (e.g., Rs. 500) immediately after their 2nd severe delay.
+## 📊 Features
+
+- **Global Insights:** Visualize order volume distribution across Sri Lankan regions and analyze how severe weather (Monsoons) impacts fleet delays.
+- **AI Routing Simulator:** Input real-time conditions (Region, Traffic, Weather) to predict exactly how many minutes an order will be delayed.
+- **Retention Sentinel:** Analyze a customer's history of severe delays to instantly calculate their probability of uninstalling the app, triggering automated retention protocols.
 
 ---
-*Disclaimer: The dataset used in this project is synthetically generated for portfolio purposes to mimic real-world logistical challenges in Sri Lanka.*
+*Created as a comprehensive portfolio project demonstrating Data Science, Backend Engineering, and Frontend UI/UX Design.*
