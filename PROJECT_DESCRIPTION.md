@@ -49,3 +49,31 @@ It demonstrates that the creator can:
 2. **Train AI Models:** Using Python, Pandas, and Scikit-Learn to extract patterns from raw data.
 3. **Deploy AI Models:** Wrapping models in a REST API (FastAPI) rather than leaving them trapped in a script.
 4. **Build User Interfaces:** Creating a polished, consumer-facing React application that interacts with the backend asynchronously.
+
+---
+
+## 4. How to Test This
+
+To fully review and test this project, you can interact with both the Business Analyst artifacts and the live Software Engineering application.
+
+### A. Reviewing the Business Analyst Artifacts
+If you are evaluating this project from a BA or Data Analyst perspective, review the native files generated in the `documents` branch:
+1. Open **`01_Business_Requirements_Document.docx`** in Microsoft Word to review the formal BRD.
+2. Open **`11_Case_Study_Report.docx`** to read the final presentation of findings and quantified ROI.
+3. Open **`09_dashboard.xlsx`** in Microsoft Excel to interact with the raw data and Pivot Charts.
+4. Open the SVG files (`02_AS-IS_Process_Map.svg`, `03_TO-BE_Process_Map.svg`) in any web browser to view the process flows.
+
+### B. Testing the Live Application (Software Engineering)
+If you want to test the actual functioning code, you need to run both the FastAPI Backend and the React Frontend simultaneously.
+
+**Step 1: Start the AI Backend**
+1. Open a terminal in the root directory.
+2. Activate the virtual environment: `.\venv\Scripts\activate` (Windows) or `source venv/bin/activate` (Mac/Linux).
+3. Start the server: `python backend/main.py`.
+4. *Test it:* Navigate to `http://localhost:8000/docs` in your browser to see the interactive Swagger UI and manually test the API endpoints.
+
+**Step 2: Start the React Frontend**
+1. Open a **second** terminal window.
+2. Navigate to the frontend folder: `cd frontend`.
+3. Start the Vite server: `npm run dev`.
+4. *Test it:* Open `http://localhost:5173` in your browser. Go to the "Routing AI" tab, change the weather condition to "Heavy Rain (Monsoon)", and click "Initialize Simulation" to watch the backend AI calculate a delayed ETA in real-time.
