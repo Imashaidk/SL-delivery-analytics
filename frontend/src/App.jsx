@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { InferenceSession, Tensor } from 'onnxruntime-web';
 import { Package, Clock, ShieldAlert, Activity, BarChart2, Zap, AlertTriangle, MapPin, CloudRain, Users, Search, Bell, User, Settings, CheckCircle2, Download, Calendar, Menu, X } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -75,17 +76,30 @@ function App() {
     e.preventDefault();
     setIsPredictingDelay(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const res = await fetch(`${API_URL}/api/predict-delay`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(delayForm)
-      });
-      const data = await res.json();
-      setDelayPrediction(data.predicted_delay_mins);
-      showToast('Delay prediction calculated successfully!');
+      const regions = ['Colombo 1-15', 'Colombo Suburbs', 'Galle', 'Gampaha', 'Kandy'];
+      const weathers = ['Clear', 'Heavy Rain (Monsoon)', 'Light Rain'];
+      const times = ['Afternoon', 'Dinner', 'Late Night', 'Lunch', 'Morning'];
+      const traffics = ['Gridlock', 'High', 'Low', 'Medium'];
+
+      const regionEnc = regions.indexOf(delayForm.region);
+      const weatherEnc = weathers.indexOf(delayForm.weather);
+      const timeEnc = times.indexOf(delayForm.time_of_day);
+      const trafficEnc = traffics.indexOf(delayForm.traffic);
+
+      const session = await InferenceSession.create('/models/delay_model.onnx');
+      const input = new Float32Array([regionEnc, parseFloat(delayForm.distance_km), weatherEnc, timeEnc, trafficEnc]);
+      const tensor = new Tensor('float32', input, [1, 5]);
+      
+      const feeds = { 'float_input': tensor };
+      const results = await session.run(feeds);
+      
+      const outputKey = session.outputNames[0];
+      const delay = results[outputKey].data[0];
+      setDelayPrediction(Math.round(delay * 10) / 10);
+      showToast('Delay prediction calculated successfully via ONNX!');
     } catch (err) {
       console.error(err);
+      showToast('Error running ONNX model.');
     } finally {
       setIsPredictingDelay(false);
     }
@@ -95,17 +109,24 @@ function App() {
     e.preventDefault();
     setIsPredictingChurn(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const res = await fetch(`${API_URL}/api/predict-churn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(churnForm)
-      });
-      const data = await res.json();
-      setChurnPrediction(data.churn_probability);
-      showToast('Churn risk analyzed successfully!');
+      const regions = ['Colombo 1-15', 'Colombo Suburbs', 'Galle', 'Gampaha', 'Kandy'];
+      const regionEnc = regions.indexOf(churnForm.region);
+      
+      const session = await InferenceSession.create('/models/churn_model.onnx');
+      const input = new Float32Array([regionEnc, parseInt(churnForm.total_orders), parseFloat(churnForm.avg_delay), parseInt(churnForm.severe_delays)]);
+      const tensor = new Tensor('float32', input, [1, 4]);
+      
+      const feeds = { 'float_input': tensor };
+      const results = await session.run(feeds);
+      
+      const probKey = session.outputNames.find(n => n.includes('prob')) || session.outputNames[1];
+      const churnProb = results[probKey].data[1]; 
+      
+      setChurnPrediction(churnProb);
+      showToast('Churn risk analyzed successfully via ONNX!');
     } catch (err) {
       console.error(err);
+      showToast('Error running ONNX model.');
     } finally {
       setIsPredictingChurn(false);
     }

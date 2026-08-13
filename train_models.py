@@ -6,6 +6,8 @@ from sklearn.metrics import mean_squared_error, accuracy_score, classification_r
 from sklearn.preprocessing import LabelEncoder
 import joblib
 import os
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
 
 print("Loading data...")
 orders = pd.read_csv('data/orders.csv')
@@ -74,4 +76,16 @@ os.makedirs('models', exist_ok=True)
 joblib.dump(delay_model, 'models/delay_model.pkl')
 joblib.dump(churn_model, 'models/churn_model.pkl')
 joblib.dump(le_dict, 'models/label_encoders.pkl')
-print("Training complete! Models saved to 'models/' directory.")
+
+# Save ONNX models
+initial_type_delay = [('float_input', FloatTensorType([None, 5]))]
+onx_delay = convert_sklearn(delay_model, initial_types=initial_type_delay)
+with open("models/delay_model.onnx", "wb") as f:
+    f.write(onx_delay.SerializeToString())
+
+initial_type_churn = [('float_input', FloatTensorType([None, 4]))]
+onx_churn = convert_sklearn(churn_model, initial_types=initial_type_churn, options={'zipmap': False})
+with open("models/churn_model.onnx", "wb") as f:
+    f.write(onx_churn.SerializeToString())
+
+print("Training complete! Models and ONNX files saved to 'models/' directory.")
