@@ -25,6 +25,39 @@ function App() {
     setIsMobileMenuOpen(false); // Close mobile menu on select
   };
 
+  const handleExportCSV = () => {
+    showToast('Preparing CSV download...');
+    
+    // Create CSV header
+    let csvContent = "Region,Avg Delay (mins),Demand Percentage\n";
+    
+    // Merge regionData and pieData for export
+    const regions = ['Galle', 'Kandy', 'Colombo 1-15', 'Col. Suburbs', 'Gampaha'];
+    
+    regions.forEach(region => {
+      const delayObj = regionData.find(d => d.region === region);
+      const pieObj = pieData.find(d => d.name === region || (region === 'Col. Suburbs' && d.name === 'Suburbs'));
+      
+      const delay = delayObj ? delayObj.delay : 'N/A';
+      const demand = pieObj ? pieObj.value + '%' : 'N/A';
+      
+      csvContent += `"${region}",${delay},${demand}\n`;
+    });
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "SL_Delivery_Analytics_Export.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    setTimeout(() => showToast('CSV Exported Successfully!'), 1000);
+  };
+
   const showToast = (msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3000);
@@ -224,7 +257,7 @@ function App() {
           <div>
             <div className="tab-header">
               <h2 style={{margin: 0}}>Global Insights</h2>
-              <button className="btn-secondary" onClick={() => showToast('Report downloading...')}>
+              <button className="btn-secondary" onClick={handleExportCSV}>
                 <Download size={16} /> Export CSV
               </button>
             </div>
