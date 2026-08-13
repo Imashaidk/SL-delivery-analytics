@@ -1,11 +1,34 @@
 import { useState, useEffect } from 'react';
-import { Package, Clock, ShieldAlert, Activity, BarChart2, Zap, AlertTriangle, MapPin, CloudRain, Users } from 'lucide-react';
+import { Package, Clock, ShieldAlert, Activity, BarChart2, Zap, AlertTriangle, MapPin, CloudRain, Users, Search, Bell, User, Settings, CheckCircle2, Download, Calendar, Menu, X } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 function App() {
   const [activeTab, setActiveTab] = useState('eda');
   const [delayPrediction, setDelayPrediction] = useState(null);
   const [churnPrediction, setChurnPrediction] = useState(null);
+  const [isPredictingDelay, setIsPredictingDelay] = useState(false);
+  const [isPredictingChurn, setIsPredictingChurn] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
+  const [isDataLoading, setIsDataLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [dateRange, setDateRange] = useState('Last 30 Days');
+  const [isDateRangeOpen, setIsDateRangeOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
+
+  // Simulate loading when switching tabs
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setIsDataLoading(true);
+    setTimeout(() => setIsDataLoading(false), 500);
+    setIsMobileMenuOpen(false); // Close mobile menu on select
+  };
+
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
   
   const [delayForm, setDelayForm] = useState({
     region: 'Colombo 1-15', distance_km: 5.0, weather: 'Clear', time_of_day: 'Morning', traffic: 'Low'
@@ -17,98 +40,195 @@ function App() {
 
   const handlePredictDelay = async (e) => {
     e.preventDefault();
+    setIsPredictingDelay(true);
     try {
-      const res = await fetch('http://localhost:8000/api/predict-delay', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/predict-delay`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(delayForm)
       });
       const data = await res.json();
       setDelayPrediction(data.predicted_delay_mins);
+      showToast('Delay prediction calculated successfully!');
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsPredictingDelay(false);
     }
   };
 
   const handlePredictChurn = async (e) => {
     e.preventDefault();
+    setIsPredictingChurn(true);
     try {
-      const res = await fetch('http://localhost:8000/api/predict-churn', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/predict-churn`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(churnForm)
       });
       const data = await res.json();
       setChurnPrediction(data.churn_probability);
+      showToast('Churn risk analyzed successfully!');
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsPredictingChurn(false);
     }
   };
 
   // Data for visual showcase
-  const churnChartData = [
+  let churnChartData = [
     { name: '0 Delays', churn: 0.05 }, { name: '1 Delay', churn: 0.20 }, { name: '2 Delays', churn: 0.35 },
     { name: '3 Delays', churn: 0.50 }, { name: '4 Delays', churn: 0.65 }, { name: '5+ Delays', churn: 0.85 },
   ];
-  const regionData = [
+  let regionData = [
     { region: 'Galle', delay: 26.5 }, { region: 'Kandy', delay: 26.0 }, { region: 'Colombo 1-15', delay: 25.5 },
     { region: 'Col. Suburbs', delay: 25.0 }, { region: 'Gampaha', delay: 24.5 },
   ];
-  const weatherData = [
-    { weather: 'Heavy Monsoon', delay: 55.2 }, { weather: 'Light Rain', delay: 32.1 }, { weather: 'Clear Sky', delay: 18.5 },
-  ];
-  const pieData = [
+  let pieData = [
     { name: 'Colombo 1-15', value: 40 }, { name: 'Suburbs', value: 25 }, { name: 'Gampaha', value: 15 },
     { name: 'Kandy', value: 10 }, { name: 'Galle', value: 10 }
   ];
+
+  if (appliedSearch) {
+    const q = appliedSearch.toLowerCase();
+    regionData = regionData.filter(d => d.region.toLowerCase().includes(q));
+    pieData = pieData.filter(d => d.name.toLowerCase().includes(q));
+  }
+
   const COLORS = ['#f97316', '#fbbf24', '#38bdf8', '#a855f7', '#ec4899'];
 
   return (
-    <div className="dashboard-container">
-      <header className="header animate-in">
-        <h1 className="title-gradient">SL Delivery Analytics Pro</h1>
-        <p className="subtitle">AI-Powered Command Center for Logistics & Retention</p>
-      </header>
+    <div className="app-layout">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && <div className="mobile-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>}
+      
+      {/* Sidebar */}
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''} ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            {!isSidebarCollapsed && (
+              <div>
+                <h2 className="title-gradient" style={{fontSize: '1.5rem', margin: 0}}>SL Delivery</h2>
+                <p className="subtitle" style={{fontSize: '0.8rem', margin: '5px 0 0 0'}}>Analytics Pro</p>
+              </div>
+            )}
+            <button className="icon-btn hide-mobile" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}>
+              <Menu size={24} />
+            </button>
+            <button className="icon-btn mobile-close-btn" onClick={() => setIsMobileMenuOpen(false)}>
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+        <nav className="sidebar-nav">
+          <button onClick={() => handleTabChange('eda')} className={`nav-item ${activeTab === 'eda' ? 'active' : ''}`}>
+            <BarChart2 size={20} style={{minWidth: '20px'}} /> <span>Global Insights</span>
+          </button>
+          <button onClick={() => handleTabChange('delay')} className={`nav-item ${activeTab === 'delay' ? 'active' : ''}`}>
+            <Zap size={20} style={{minWidth: '20px'}} /> <span>Routing AI</span>
+          </button>
+          <button onClick={() => handleTabChange('churn')} className={`nav-item ${activeTab === 'churn' ? 'active' : ''}`}>
+            <AlertTriangle size={20} style={{minWidth: '20px'}} /> <span>Retention AI</span>
+          </button>
+        </nav>
+      </aside>
 
-      <section className="kpi-grid animate-in delay-1">
-        <div className="glass-panel kpi-card">
-          <div className="kpi-label"><Package size={16} /> Total Volume</div>
-          <p className="kpi-value">15.2k</p>
-          <span style={{color: '#94a3b8', fontSize: '0.85rem'}}><span className="live-dot"></span>Live Sync Active</span>
-        </div>
-        <div className="glass-panel kpi-card">
-          <div className="kpi-label"><Clock size={16} /> Avg Fleet Delay</div>
-          <p className="kpi-value">13.2<span style={{fontSize:'1.5rem'}}>m</span></p>
-          <span style={{color: '#10b981', fontSize: '0.85rem'}}>↓ 1.2m vs last month</span>
-        </div>
-        <div className="glass-panel kpi-card">
-          <div className="kpi-label"><CloudRain size={16} /> Monsoon Impact</div>
-          <p className="kpi-value" style={{color: '#ef4444'}}>+45<span style={{fontSize:'1.5rem'}}>m</span></p>
-          <span style={{color: '#ef4444', fontSize: '0.85rem'}}>Critical Alert active</span>
-        </div>
-        <div className="glass-panel kpi-card">
-          <div className="kpi-label"><Users size={16} /> Churn Risk</div>
-          <p className="kpi-value">52%</p>
-          <span style={{color: '#f59e0b', fontSize: '0.85rem'}}>Elevated due to weather</span>
-        </div>
-      </section>
+      {/* Main Content */}
+      <main className="main-content">
+        <header className="topbar">
+          <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+            <button className="icon-btn mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
+              <Menu size={24} />
+            </button>
+            <div className="search-bar hide-mobile">
+              <Search size={18} color="#94a3b8" />
+              <input 
+                type="text" 
+                placeholder="Search orders, regions, or alerts..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (searchQuery.trim() !== '') {
+                      showToast(`Searching for "${searchQuery}"...`);
+                      setAppliedSearch(searchQuery.trim());
+                    } else {
+                      setAppliedSearch('');
+                      showToast('Search cleared.');
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+          
+          <div className="topbar-actions">
+            <div style={{position: 'relative'}} className="hide-mobile">
+              <div className="date-picker-dropdown" onClick={() => setIsDateRangeOpen(!isDateRangeOpen)}>
+                <Calendar size={16} />
+                <span>{dateRange}</span>
+              </div>
+              {isDateRangeOpen && (
+                <div className="profile-dropdown animate-in" style={{top: '45px', right: 'auto', left: 0}}>
+                  <button className="dropdown-item" onClick={() => {setDateRange('Last 7 Days'); setIsDateRangeOpen(false); showToast('Date range updated to Last 7 Days');}}>Last 7 Days</button>
+                  <button className="dropdown-item" onClick={() => {setDateRange('Last 30 Days'); setIsDateRangeOpen(false); showToast('Date range updated to Last 30 Days');}}>Last 30 Days</button>
+                  <button className="dropdown-item" onClick={() => {setDateRange('Year to Date'); setIsDateRangeOpen(false); showToast('Date range updated to Year to Date');}}>Year to Date</button>
+                </div>
+              )}
+            </div>
+            <button className="icon-btn bell-btn">
+              <Bell size={20} />
+              <span className="badge"></span>
+            </button>
+          </div>
+        </header>
 
-      <div className="tabs-container animate-in delay-2">
-        <button onClick={() => setActiveTab('eda')} className={`tab-btn ${activeTab === 'eda' ? 'active' : ''}`}>
-          <BarChart2 size={18} /> Global Insights
-        </button>
-        <button onClick={() => setActiveTab('delay')} className={`tab-btn ${activeTab === 'delay' ? 'active' : ''}`}>
-          <Zap size={18} /> Routing AI
-        </button>
-        <button onClick={() => setActiveTab('churn')} className={`tab-btn ${activeTab === 'churn' ? 'active' : ''}`}>
-          <AlertTriangle size={18} /> Retention AI
-        </button>
-      </div>
+        <div className="dashboard-container">
+          <section className="kpi-grid animate-in delay-1">
+            <div className="glass-panel kpi-card">
+              <div className="kpi-label"><Package size={16} /> Total Volume</div>
+              <p className="kpi-value">15.2k</p>
+              <span style={{color: '#94a3b8', fontSize: '0.85rem'}}><span className="live-dot"></span>Live Sync Active</span>
+            </div>
+            <div className="glass-panel kpi-card">
+              <div className="kpi-label"><Clock size={16} /> Avg Fleet Delay</div>
+              <p className="kpi-value">13.2<span style={{fontSize:'1.5rem'}}>m</span></p>
+              <span style={{color: '#10b981', fontSize: '0.85rem'}}>↓ 1.2m vs last month</span>
+            </div>
+            <div className="glass-panel kpi-card">
+              <div className="kpi-label"><CloudRain size={16} /> Monsoon Impact</div>
+              <p className="kpi-value" style={{color: '#ef4444'}}>+45<span style={{fontSize:'1.5rem'}}>m</span></p>
+              <span style={{color: '#ef4444', fontSize: '0.85rem'}}>Critical Alert active</span>
+            </div>
+            <div className="glass-panel kpi-card">
+              <div className="kpi-label"><Users size={16} /> Churn Risk</div>
+              <p className="kpi-value">52%</p>
+              <span style={{color: '#f59e0b', fontSize: '0.85rem'}}>Elevated due to weather</span>
+            </div>
+          </section>
 
-      <div className="animate-in delay-3">
+      <div className="animate-in delay-3" style={{position: 'relative'}}>
+        {isDataLoading && (
+          <div className="skeleton-overlay">
+            <div className="skeleton-card" style={{height: '300px'}}></div>
+            <div className="skeleton-card" style={{height: '300px'}}></div>
+            <div className="skeleton-card" style={{height: '400px', gridColumn: '1 / -1'}}></div>
+          </div>
+        )}
+        
         {/* TAB 1: EDA */}
-        {activeTab === 'eda' && (
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px'}}>
+        {activeTab === 'eda' && !isDataLoading && (
+          <div>
+            <div className="tab-header">
+              <h2 style={{margin: 0}}>Global Insights</h2>
+              <button className="btn-secondary" onClick={() => showToast('Report downloading...')}>
+                <Download size={16} /> Export CSV
+              </button>
+            </div>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px'}}>
             
             <div className="glass-panel">
               <h3 style={{marginTop: 0, display: 'flex', alignItems: 'center', gap: '8px'}}><MapPin size={20} color="#f97316"/> Demand Distribution</h3>
@@ -164,10 +284,11 @@ function App() {
               </div>
             </div>
           </div>
+          </div>
         )}
 
         {/* TAB 2: DELAY */}
-        {activeTab === 'delay' && (
+        {activeTab === 'delay' && !isDataLoading && (
           <div className="glass-panel" style={{maxWidth: '650px', margin: '0 auto'}}>
             <div style={{textAlign: 'center', marginBottom: '30px'}}>
               <div style={{display: 'inline-block', background: 'rgba(249, 115, 22, 0.1)', padding: '15px', borderRadius: '50%', marginBottom: '15px'}}>
@@ -202,7 +323,9 @@ function App() {
                   </select>
                 </div>
               </div>
-              <button type="submit" className="btn-primary">Initialize Simulation</button>
+              <button type="submit" className="btn-primary" disabled={isPredictingDelay}>
+                {isPredictingDelay ? <span className="spinner"></span> : 'Initialize Simulation'}
+              </button>
             </form>
             
             {delayPrediction !== null && (
@@ -226,7 +349,7 @@ function App() {
         )}
 
         {/* TAB 3: CHURN */}
-        {activeTab === 'churn' && (
+        {activeTab === 'churn' && !isDataLoading && (
            <div className="glass-panel" style={{maxWidth: '650px', margin: '0 auto'}}>
             <div style={{textAlign: 'center', marginBottom: '30px'}}>
               <div style={{display: 'inline-block', background: 'rgba(239, 68, 68, 0.1)', padding: '15px', borderRadius: '50%', marginBottom: '15px'}}>
@@ -247,7 +370,9 @@ function App() {
                   <input type="number" className="form-control" min="0" value={churnForm.severe_delays} onChange={e => setChurnForm({...churnForm, severe_delays: parseInt(e.target.value)})} />
                 </div>
               </div>
-              <button type="submit" className="btn-primary" style={{background: 'linear-gradient(135deg, #ef4444, #f97316)'}}>Analyze Flight Risk</button>
+              <button type="submit" className="btn-primary" style={{background: 'linear-gradient(135deg, #ef4444, #f97316)'}} disabled={isPredictingChurn}>
+                {isPredictingChurn ? <span className="spinner"></span> : 'Analyze Flight Risk'}
+              </button>
             </form>
             
             {churnPrediction !== null && (
@@ -271,6 +396,16 @@ function App() {
         )}
 
       </div>
+        </div>
+      </main>
+
+      {/* Toast Notification */}
+      {toastMsg && (
+        <div className="toast animate-in-slide">
+          <CheckCircle2 size={20} color="#10b981" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
     </div>
   );
 }
