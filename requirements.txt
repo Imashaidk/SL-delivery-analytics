@@ -6,3 +6,5 @@ seaborn
 folium
 streamlit
 notebook
+fastapi
+uvicorn
