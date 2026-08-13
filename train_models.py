@@ -35,7 +35,7 @@ for col in ['Region', 'Weather', 'TimeOfDay', 'Traffic']:
 
 X_train_d, X_test_d, y_train_d, y_test_d = train_test_split(X_delay, y_delay, test_size=0.2, random_state=42)
 
-delay_model = RandomForestRegressor(n_estimators=50, random_state=42, n_jobs=-1)
+delay_model = RandomForestRegressor(n_estimators=50, max_depth=10, random_state=42, n_jobs=-1)
 delay_model.fit(X_train_d, y_train_d)
 
 y_pred_d = delay_model.predict(X_test_d)
@@ -59,7 +59,7 @@ le_dict['Churn_Region'] = le_churn
 
 X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_churn, y_churn, test_size=0.2, random_state=42)
 
-churn_model = RandomForestClassifier(n_estimators=50, random_state=42, n_jobs=-1)
+churn_model = RandomForestClassifier(n_estimators=50, max_depth=10, random_state=42, n_jobs=-1)
 churn_model.fit(X_train_c, y_train_c)
 
 y_pred_c = churn_model.predict(X_test_c)

@@ -72,10 +72,34 @@ function App() {
     region: 'Colombo 1-15', total_orders: 15, avg_delay: 15.0, severe_delays: 2
   });
 
+  const [delaySession, setDelaySession] = useState(null);
+  const [churnSession, setChurnSession] = useState(null);
+
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        const dSession = await InferenceSession.create('/models/delay_model.onnx');
+        setDelaySession(dSession);
+        
+        const cSession = await InferenceSession.create('/models/churn_model.onnx');
+        setChurnSession(cSession);
+      } catch (err) {
+        console.error("Error loading ONNX models", err);
+      }
+    };
+    loadModels();
+  }, []);
+
   const handlePredictDelay = async (e) => {
     e.preventDefault();
     setIsPredictingDelay(true);
     try {
+      if (!delaySession) {
+        showToast('AI Model is still loading, please wait...');
+        setIsPredictingDelay(false);
+        return;
+      }
+
       const regions = ['Colombo 1-15', 'Colombo Suburbs', 'Galle', 'Gampaha', 'Kandy'];
       const weathers = ['Clear', 'Heavy Rain (Monsoon)', 'Light Rain'];
       const times = ['Afternoon', 'Dinner', 'Late Night', 'Lunch', 'Morning'];
@@ -86,14 +110,13 @@ function App() {
       const timeEnc = times.indexOf(delayForm.time_of_day);
       const trafficEnc = traffics.indexOf(delayForm.traffic);
 
-      const session = await InferenceSession.create('/models/delay_model.onnx');
       const input = new Float32Array([regionEnc, parseFloat(delayForm.distance_km), weatherEnc, timeEnc, trafficEnc]);
       const tensor = new Tensor('float32', input, [1, 5]);
       
       const feeds = { 'float_input': tensor };
-      const results = await session.run(feeds);
+      const results = await delaySession.run(feeds);
       
-      const outputKey = session.outputNames[0];
+      const outputKey = delaySession.outputNames[0];
       const delay = results[outputKey].data[0];
       setDelayPrediction(Math.round(delay * 10) / 10);
       showToast('Delay prediction calculated successfully via ONNX!');
@@ -109,17 +132,22 @@ function App() {
     e.preventDefault();
     setIsPredictingChurn(true);
     try {
+      if (!churnSession) {
+        showToast('AI Model is still loading, please wait...');
+        setIsPredictingChurn(false);
+        return;
+      }
+
       const regions = ['Colombo 1-15', 'Colombo Suburbs', 'Galle', 'Gampaha', 'Kandy'];
       const regionEnc = regions.indexOf(churnForm.region);
       
-      const session = await InferenceSession.create('/models/churn_model.onnx');
       const input = new Float32Array([regionEnc, parseInt(churnForm.total_orders), parseFloat(churnForm.avg_delay), parseInt(churnForm.severe_delays)]);
       const tensor = new Tensor('float32', input, [1, 4]);
       
       const feeds = { 'float_input': tensor };
-      const results = await session.run(feeds);
+      const results = await churnSession.run(feeds);
       
-      const probKey = session.outputNames.find(n => n.includes('prob')) || session.outputNames[1];
+      const probKey = churnSession.outputNames.find(n => n.includes('prob')) || churnSession.outputNames[1];
       const churnProb = results[probKey].data[1]; 
       
       setChurnPrediction(churnProb);
